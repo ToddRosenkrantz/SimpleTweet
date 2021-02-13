@@ -18,7 +18,7 @@ The following **required** functionality is completed:
 
 The following **optional** features are implemented:
 
-- [ ] User can view more tweets as they scroll with infinite pagination
+- [X] User can view more tweets as they scroll with infinite pagination
 - [X] Improve the user interface and theme the app to feel "twitter branded"
 - [X] Links in tweets are clickable and will launch the web browser
 - [ ] User can tap a tweet to display a "detailed" view of that tweet
