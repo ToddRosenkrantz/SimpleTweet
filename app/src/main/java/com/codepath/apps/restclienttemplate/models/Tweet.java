@@ -1,5 +1,7 @@
 package com.codepath.apps.restclienttemplate.models;
 
+import android.util.Log;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -13,6 +15,7 @@ public class Tweet {
     public long id;
     public User user;
     public Boolean media_flag;
+    public String media_url;
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
@@ -21,6 +24,15 @@ public class Tweet {
         tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.id = jsonObject.getLong("id");
         tweet.media_flag = jsonObject.has("media");
+        if(jsonObject.has("entities")){
+            JSONObject entity = jsonObject.getJSONObject("entities");
+            if(entity.has("media")){
+                JSONArray media = entity.getJSONArray("media");
+
+                tweet.media_url = media.getJSONObject(0).getString("media_url");
+                // Log.i("TimelineActivity", tweet.media_url);
+            }
+        }
         return tweet;
     }
     public static List<Tweet> fromJsonArray(JSONArray jsonArray) throws JSONException {
