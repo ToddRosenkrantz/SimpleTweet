@@ -1,6 +1,9 @@
 # SimpleTweet
 A simple android twitter application
 # Project 2, part 2 - SweeterApp
+
+Time spent: 20 hours spent in total
+
 ## User Stories
 
 The following **required** functionality is completed:
