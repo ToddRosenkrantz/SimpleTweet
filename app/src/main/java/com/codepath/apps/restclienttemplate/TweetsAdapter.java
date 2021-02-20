@@ -1,16 +1,19 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.text.Html;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
+import androidx.core.text.HtmlCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -53,13 +56,14 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
 
 
     // Define a ViewHolder
-    public class ViewHolder extends RecyclerView.ViewHolder{
+    public class ViewHolder extends RecyclerView.ViewHolder {
         ImageView ivProfileImage;
         TextView tvBody;
         TextView tvName;
         TextView tvScreenName;
         TextView tvRecency;
         ImageView ivMedia;
+        RelativeLayout container;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -69,23 +73,47 @@ public class TweetsAdapter extends RecyclerView.Adapter<TweetsAdapter.ViewHolder
             tvName = itemView.findViewById(R.id.tvName);
             tvRecency = itemView.findViewById(R.id.tvRecency);
             ivMedia = itemView.findViewById(R.id.ivMedia);
+            container = itemView.findViewById(R.id.rvContainer);
         }
 
-        public void bind(Tweet tweet) {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                tvBody.setText(Html.fromHtml(tweet.body, Html.FROM_HTML_MODE_LEGACY));
-            } else {
-                tvBody.setText(Html.fromHtml(tweet.body));
-            }
-//            tvBody.setText(tweet.body);
+        public void bind(final Tweet tweet) {
+            tvBody.setText(tweet.body);
             tvRecency.setText(TimeFormatter.getTimeDifference(tweet.createdAt));
-            tvScreenName.setText("@"+tweet.user.screenName);
+//            tvRecency.setText(tweet.tweet_id_str);
+            tvScreenName.setText("@" + tweet.user.screenName);
             tvName.setText(tweet.user.name);
             Glide.with(context).load(tweet.user.profileImageUrl).into(ivProfileImage);
 //            if(tweet.media_url != ""){
 //                Glide.with(context).load(tweet.media_url).into(ivMedia);
 //                Log.i("TimelineActivity", tweet.media_url);
 //            }
+            tvBody.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+//                    Toast.makeText(context, "Clicked on tweet: " + tweet.tweet_id_str, Toast.LENGTH_LONG).show();
+                    int position = getAdapterPosition();
+                    // validate position
+                    if (position != RecyclerView.NO_POSITION) {
+                        // get the movie at the position, DOESN'T work if class is static
+//                        Movie movie = movies.get(position);
+                        // create intent for the new activity
+                        Intent i = new Intent(context, DetailActivity.class);
+                        i.putExtra("tweet_id", tweet.tweet_id_str);
+//                        i.putExtra("tweet_id", "1362159893910720515");
+                        // show the activity
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+//                        ActivityOptionsCompat options = ActivityOptionsCompat.
+//                                makeSceneTransitionAnimation(this, ivPoster, "poster");
+//                        startActivity(intent, options.toBundle());
+//                        context.startActivity(i,options.toBundle());
+                            context.startActivity(i);
+                        } else {
+//                        startActivity(intent);
+                            context.startActivity(i);
+                        }
+                    }
+                }
+            });
         }
     }
     // Clean all elements of the recycler

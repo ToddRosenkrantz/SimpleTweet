@@ -1,11 +1,11 @@
 package com.codepath.apps.restclienttemplate;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.codepath.asynchttpclient.RequestParams;
 import com.codepath.asynchttpclient.callback.JsonHttpResponseHandler;
 import com.codepath.oauth.OAuthBaseClient;
-import com.github.scribejava.apis.FlickrApi;
 import com.github.scribejava.apis.TwitterApi;
 import com.github.scribejava.core.builder.api.BaseApi;
 
@@ -23,7 +23,10 @@ import com.github.scribejava.core.builder.api.BaseApi;
  */
 public class TwitterClient extends OAuthBaseClient {
 	public static final BaseApi REST_API_INSTANCE = TwitterApi.instance(); // Change this
+//	public static final String REST_URL = "https://api.twitter.com"; // Change this, base API URL
+//	public static final String DEFAULT_API = "/1.1";
 	public static final String REST_URL = "https://api.twitter.com/1.1"; // Change this, base API URL
+	public static final String REST_URL2 = "https://api.twitter.com/2"; // Change this, base API URL
 	public static final String REST_CONSUMER_KEY = BuildConfig.CONSUMER_KEY;       // Change this inside apikey.properties
 	public static final String REST_CONSUMER_SECRET = BuildConfig.CONSUMER_SECRET; // Change this inside apikey.properties
 
@@ -45,7 +48,7 @@ public class TwitterClient extends OAuthBaseClient {
 	// CHANGE THIS
 	// DEFINE METHODS for different API endpoints here
 	public void getHomeTimeLine(JsonHttpResponseHandler handler) {
-		String apiUrl = getApiUrl("/statuses/home_timeline.json");
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
@@ -53,12 +56,33 @@ public class TwitterClient extends OAuthBaseClient {
 		client.get(apiUrl, params, handler);
 	}
 	public void getNextPageOfTweets(JsonHttpResponseHandler handler, long maxId){
-		String apiUrl = getApiUrl("/statuses/home_timeline.json");
+		String apiUrl = getApiUrl("statuses/home_timeline.json");
 		// Can specify query string params directly or through RequestParams.
 		RequestParams params = new RequestParams();
 		params.put("count", 25);
 		params.put("max_id", maxId);
+//		Log.i("TwitterClient","max_id " + maxId +" called: " + apiUrl);
 		client.get(apiUrl, params, handler);
+	}
+	public void publishTweet(String tweetContent, JsonHttpResponseHandler handler) {
+		String apiUrl = getApiUrl("statuses/update.json");
+		// Can specify query string params directly or through RequestParams.
+		RequestParams params = new RequestParams();
+		params.put("status", tweetContent);
+		client.post(apiUrl, params,"", handler);
+	}
+	public void getTweetv2(JsonHttpResponseHandler handler, String id){
+		String apiUrl = "https://api.twitter.com/2/tweets/"+id;
+		// Can specify query string params directly or through RequestParams
+		// &tweet.fields=attachments,author_id,context_annotations,created_at,entities,geo,id,in_reply_to_user_id,lang,possibly_sensitive,public_metrics,referenced_tweets,source,text,withheld
+		// &expansions=referenced_tweets.id'
+		RequestParams params = new RequestParams();
+//		params.put("id:",id);
+		params.put("tweet.fields","public_metrics,created_at,entities");
+		params.put("expansions","attachments.media_keys");
+		Log.i("TwitterCient", "Getting.. " + apiUrl);
+		client.get(apiUrl, params, handler);
+
 	}
 	/* 1. Define the endpoint URL with getApiUrl and pass a relative path to the endpoint
 	 * 	  i.e getApiUrl("statuses/home_timeline.json");

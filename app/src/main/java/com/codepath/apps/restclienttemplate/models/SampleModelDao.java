@@ -16,7 +16,7 @@ public interface SampleModelDao {
     @Query("SELECT * FROM SampleModel WHERE id = :id")
     SampleModel byId(long id);
 
-    @Query("SELECT * FROM SampleModel ORDER BY ID DESC LIMIT 300")
+    @Query("SELECT * FROM SampleModel ORDER BY ID DESC LIMIT 5")
     List<SampleModel> recentItems();
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)

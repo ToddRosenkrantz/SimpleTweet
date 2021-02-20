@@ -1,6 +1,10 @@
 package com.codepath.apps.restclienttemplate.models;
 
-import android.util.Log;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Ignore;
+import androidx.room.PrimaryKey;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -8,22 +12,51 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+import org.parceler.Parcel;
 
+@Parcel
+@Entity(foreignKeys = @ForeignKey(entity=User.class, parentColumns="id", childColumns="userId"))
 public class Tweet {
-    public String body;
-    public String createdAt;
+
+    @ColumnInfo
+    @PrimaryKey
     public long id;
+
+    @ColumnInfo
+    public String body;
+
+    @ColumnInfo
+    public String createdAt;
+
+    @ColumnInfo(index=true)
+    public long userId;
+
+    @Ignore
     public User user;
+
+    @ColumnInfo
     public Boolean media_flag;
+
+    @ColumnInfo
     public String media_url;
+
+    @ColumnInfo
+    public String tweet_id_str;
+
+    // empty constructor need by Parceler Library
+    public Tweet() {}
 
     public static Tweet fromJson(JSONObject jsonObject) throws JSONException {
         Tweet tweet = new Tweet();
         tweet.body = jsonObject.getString("text");
         tweet.createdAt = jsonObject.getString("created_at");
-        tweet.user = User.fromJson(jsonObject.getJSONObject("user"));
         tweet.id = jsonObject.getLong("id");
+        tweet.tweet_id_str = jsonObject.getString("id_str");
+        User user = User.fromJson(jsonObject.getJSONObject("user"));
+        tweet.user = user;
+        tweet.userId = user.id;
         tweet.media_flag = jsonObject.has("media");
+
         if(jsonObject.has("entities")){
             JSONObject entity = jsonObject.getJSONObject("entities");
             if(entity.has("media")){
